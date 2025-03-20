@@ -124,6 +124,9 @@ def montecarlo_vectorizado(n: int):
    
 # MÉTODO PRINCIPAL
 
+# Iniciar semilla
+np.random.seed(42)
+
 # Leer parametros
 n = int(sys.argv[1]) # Cantidad de iteraciones
 modo = "iterativo" if len(sys.argv) <= 2 else sys.argv[2] # Modo iterativo o vectorizado
