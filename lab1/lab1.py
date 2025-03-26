@@ -211,7 +211,3 @@ else:
   plt.ylabel("Valor de V")
   plt.legend()
   plt.show()
-
-
-
-
