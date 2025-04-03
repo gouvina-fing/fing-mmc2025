@@ -33,7 +33,7 @@ def funcion_ej62(x):
 # FUNCIONES PRINCIPALES
 
 # Version iterativa del metodo, generando valores aleatorios y acumulando en cada iteracion
-def montecarlo(n: int, funcion, semilla):
+def montecarlo(n: int, f, funcion, semilla):
 
   # Inicializar contadores
   tic = time.time()
@@ -52,14 +52,20 @@ def montecarlo(n: int, funcion, semilla):
   for i in range(1, n+1):
     
     # Sortear puntos de 5 coordenadas
-    x1 = np.random.uniform(0, 1)
-    x2 = np.random.uniform(0, 1)
-    x3 = np.random.uniform(0, 1)
-    x4 = np.random.uniform(0, 1)
-    x5 = np.random.uniform(0, 1)
+    if f == "ej62":
+      x1 = np.random.uniform(0, 1)
+      x2 = np.random.uniform(0, 1)
+      x3 = np.random.uniform(0, 1)
+      x4 = np.random.uniform(0, 1)
+      x5 = np.random.uniform(0, 1)
+      x = (x1, x2, x3, x4, x5)
+    else:
+      x1 = np.random.uniform(0, 1)
+      x2 = np.random.uniform(0, 1)
+      x = (x1, x2)
 
     # Calcular valor de la función 
-    valor_funcion = funcion((x1, x2, x3, x4, x5))
+    valor_funcion = funcion(x)
 
     # Acumular valor de la función para posterior estimador
     acumulador += valor_funcion
@@ -110,13 +116,21 @@ integral_exacta = 1 / 720
 n = int(sys.argv[1]) # Cantidad de iteraciones (n)
 e = 0.0001 if len(sys.argv) <= 2 else float(sys.argv[2]) # Error (e)
 d = 0.05 if len(sys.argv) <= 3 else float(sys.argv[3]) # Nivel de confianza (1-d)
-tipo_de_ejecucion = "simple" if len(sys.argv) <= 4 else sys.argv[4] # Tipo de ejecucion simple, busqueda o cobertura
+f = "ej62" if len(sys.argv) <=4 else sys.argv[4] # Función de ejercicio 6.1 o 6.2
+tipo_de_ejecucion = "simple" if len(sys.argv) <= 5 else sys.argv[5] # Tipo de ejecucion simple, busqueda o cobertura
 
 # Para ejecucion simple (parte a y b), se ejecuta el método para la cantidad de iteraciones elegida
 if tipo_de_ejecucion == "simple":
    
+  # Elegir funcion
+  funcion = None
+  if f == "ej62":
+    funcion = funcion_ej62
+  else:
+    funcion = funcion_ej61
+
   # Ejecutar método de monte carlo
-  estimador, varianza_funcion, desviacion_estimador, tiempo_de_ejecucion = montecarlo(n, funcion_ej62, 42)
+  estimador, varianza_funcion, desviacion_estimador, tiempo_de_ejecucion = montecarlo(n, f, funcion, 42)
 
   # Calcular intervalo de confianza según método de aproximación normal
   w1, w2 = intervalo_normal(estimador, desviacion_estimador, d)
@@ -155,7 +169,7 @@ elif tipo_de_ejecucion == "cobertura":
   for i in range(0, L):
       
       # Ejecutar método de monte carlo
-      estimador, varianza_funcion, desviacion_estimador, tiempo_de_ejecucion = montecarlo(n, funcion_ej62, i)
+      estimador, varianza_funcion, desviacion_estimador, tiempo_de_ejecucion = montecarlo(n, f, funcion_ej62, i)
       
       # Iterar para valores de 1-d, calculando intervalo de confianza según método de aproximación normal
       for d_nc in niveles_de_confianza:
@@ -218,9 +232,17 @@ elif tipo_de_ejecucion == "cobertura":
     plt.legend()
     plt.savefig(f'estimador_X_in_{1-d_nc}.png')
 
-
 # Para ejecucion de busqueda, se ejecuta el método para distintos valores de n, generando una tabla comparativa
 else:
+
+  # Elegir funcion
+  funcion = None
+  if f == "ej62":
+    funcion = funcion_ej62
+    lista_n = [10000, 36413, 100000, 1000000]
+  else:
+    funcion = funcion_ej61
+    lista_n = [10000, 100000, 1000000, 10000000, 13725091]
 
   # Inicializar auxiliares
   resultados = [] # Tabla de resultados
@@ -232,11 +254,12 @@ else:
   grafica_eje_y_confianza_w1 = []
   grafica_eje_y_confianza_w2 = []
 
-  # Iterar para cada valor del rango 10^4 a 10^6, agregando entre medio el caso del n óptimo calculado en parte b
-  for n in [10000, 36413, 100000, 1000000]:
+  # Ejercicio 6.1: Iterar para cada valor del rango 10^4 a 10^7, agregando al final el caso del n óptimo calculado en parte b
+  # Ejercicio 6.2: Iterar para cada valor del rango 10^4 a 10^6, agregando entre medio el caso del n óptimo calculado en parte b
+  for n in lista_n:
 
     # Ejecutar método de monte carlo para cantidad de iteraciones correspondiente
-    estimador, varianza_funcion, desviacion_estimador, tiempo_de_ejecucion = montecarlo(n, funcion_ej62, 42)
+    estimador, varianza_funcion, desviacion_estimador, tiempo_de_ejecucion = montecarlo(n, f, funcion, 42)
     print(f"Ejecutado para {n} valores")
 
     # Calcular intervalo de confianza según método de aproximación normal
@@ -250,7 +273,10 @@ else:
     resultados.append(resultados_intermedios)
 
     # Agregar cantidad de iteraciones a lista para grafica
-    grafica_eje_x.append(["10^4", "36413", "10^5", "10^6"][contador])
+    if f == "ej62":
+      grafica_eje_x.append(["10^4", "36413", "10^5", "10^6"][contador])
+    else:
+      grafica_eje_x.append(["10^4", "10^5", "10^6", "10^7", "13725091"][contador])
     grafica_eje_y_estimador.append(estimador)
     grafica_eje_y_varianza_f.append(varianza_funcion)
     grafica_eje_y_varianza_e.append(desviacion_estimador)
@@ -270,7 +296,8 @@ else:
 
   # Generar gráfica de X para estudiar convergencia
   plt.figure(figsize=(8, 5))
-  plt.axhline(y=integral_exacta, color='gold', linestyle='dashed', label='Integral exacta')
+  if f == "ej62":
+    plt.axhline(y=integral_exacta, color='gold', linestyle='dashed', label='Integral exacta')
   plt.plot(grafica_eje_x, grafica_eje_y_estimador, label='X', color='orangered', linewidth=2)
   plt.plot(grafica_eje_x, grafica_eje_y_confianza_w1, label='w1', linestyle='dashed', color='limegreen', linewidth=2)
   plt.plot(grafica_eje_x, grafica_eje_y_confianza_w2, label='w2', linestyle='dashed', color='limegreen', linewidth=2)
