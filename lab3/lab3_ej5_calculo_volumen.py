@@ -143,8 +143,7 @@ if tipo_de_ejecucion == "simple":
 else: 
 
   # Inicializar parametros
-  n = 10 # Cantidad de iteraciones, aumenta en potencia de 10
-  batch = 100000 if n >= 100000 else n # Tamaño de batch, con n < 100,000 es n (basicamente, metodo iterativo)
+  batch = 100000
   d = 0.05
 
   # Inicializar auxiliares
@@ -158,7 +157,7 @@ else:
   grafica_eje_y_confianza_w3 = []
   grafica_eje_y_confianza_w4 = []
 
-  # Iterar para cada valor del rango 10 a 10^8, agregando como ultimo caso el de n optimo 
+  # Iterar para cada valor del rango 10^4 a 10^8, agregando como ultimo caso el de n optimo 
   for n in [10000, 100000, 1000000, 10000000, 100000000, 184443973]:
 
     # Ejecutar método de monte carlo para cantidad de iteraciones correspondiente
