@@ -9,25 +9,29 @@ from scipy.stats import norm
 
 # FUNCIONES AUXILIARES
 
+# Generar punto utilizando derivación del libro
 def generar_punto():
     
-    # Paso 1: generar r con F(r) = r^2 -> r = sqrt(U)
+    # Paso 1: Generar r con F(r) = r^2 -> r = sqrt(U(0,1))
     u = np.random.rand(1)[0]
     r = np.sqrt(u)
 
-    # Paso 2: dirección aleatoria en el círculo unitario
+    # Paso 2: Generar Z1, Z2 = N(0,1)
     z1 = np.random.randn(1)[0]
     z2 = np.random.randn(1)[0]
-    norma = np.sqrt(z1**2 + z2**2)
-    
-    x1 = r * z1 / norma
-    x2 = r * z2 / norma
+    raiz = np.sqrt(z1**2 + z2**2)
 
+    # Paso 3: Aplicar derivación y generar puntos en (0, 0) y radio 1
+    x1 = r * z1 / raiz
+    x2 = r * z2 / raiz
+
+    # Paso 4: Transformar punto para círculo de centro (0.5, 0.5) y radio 0.4
     x1 = 0.5 + 0.4 * x1
     x2 = 0.5 + 0.4 * x2
   
     return x1, x2
 
+# Calcular valor de la función altura
 def funcion_ej61(x):
 
   # Coordenadas del punto
@@ -129,9 +133,6 @@ if tipo_de_ejecucion == "simple":
 
   # Calcular intervalo de confianza según método de aproximación normal
   w1, w2 = intervalo_normal(estimador, desviacion_estimador, d)
-  
-  # Calcular cantidad de replicaciones
-  nN = calculo_nn_normal(e, d, np.sqrt(varianza_funcion))
 
   # Mostrar resultados
   print()
@@ -141,13 +142,12 @@ if tipo_de_ejecucion == "simple":
   print("Desviacion del estimador:", desviacion_estimador)
   print("Varianza de la función:", varianza_funcion)
   print("Intervalo de confianza:", w1, w2)
-  print(f"Cantidad de iteraciones para e={e} y 1-d={1-d}:", nN)
 
 # Para ejecucion de busqueda, se ejecuta el método para distintos valores de n, generando una tabla comparativa
 else:
 
   # Inicializar auxiliares
-  lista_n = [10000, 100000, 1000000, 10000000, 13725091]
+  lista_n = [10000, 100000, 1000000, 1000000]
   resultados = [] # Tabla de resultados
   contador = 0
   grafica_eje_x = []
@@ -157,8 +157,7 @@ else:
   grafica_eje_y_confianza_w1 = []
   grafica_eje_y_confianza_w2 = []
 
-  # Ejercicio 6.1: Iterar para cada valor del rango 10^4 a 10^7, agregando al final el caso del n óptimo calculado en parte b
-  # Ejercicio 6.2: Iterar para cada valor del rango 10^4 a 10^6, agregando entre medio el caso del n óptimo calculado en parte b
+  # Iterar para cada valor del rango 10^4 a 10^6
   for n in lista_n:
 
     # Ejecutar método de monte carlo para cantidad de iteraciones correspondiente
@@ -167,16 +166,13 @@ else:
 
     # Calcular intervalo de confianza según método de aproximación normal
     w1, w2 = intervalo_normal(estimador, desviacion_estimador, d)
-    
-    # Calcular cantidad de replicaciones
-    nN = calculo_nn_normal(e, d, np.sqrt(varianza_funcion))
 
     # Generar matriz de resultados
-    resultados_intermedios = [n, estimador, varianza_funcion, desviacion_estimador, w1, w2, nN, tiempo_de_ejecucion]
+    resultados_intermedios = [n, estimador, varianza_funcion, desviacion_estimador, w1, w2, tiempo_de_ejecucion]
     resultados.append(resultados_intermedios)
 
     # Agregar cantidad de iteraciones a lista para grafica
-    grafica_eje_x.append(["10^4", "10^5", "10^6", "10^7", "13725091"][contador])
+    grafica_eje_x.append(["10^4", "10^5", "10^6", "10^7"][contador])
     grafica_eje_y_estimador.append(estimador)
     grafica_eje_y_varianza_f.append(varianza_funcion)
     grafica_eje_y_varianza_e.append(desviacion_estimador)
@@ -189,7 +185,7 @@ else:
   # Mostrar resultados en una tabla
   df = pd.DataFrame(resultados, columns=[
      "Iteraciones", "Estimador (X)", "Varianza de la función (Vf)", "Desviacion del estimador (Vx)",
-     "IdeC Normal (w1)", "IdeC Normal (w2)", "Cantidad de replicaciones óptima (nN)", 
+     "IdeC Normal (w1)", "IdeC Normal (w2)", 
      "Tiempo (s)"], index=range(1, len(resultados) + 1))
   print()
   print(df)
