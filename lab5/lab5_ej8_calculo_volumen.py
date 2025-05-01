@@ -67,7 +67,7 @@ def montecarlo_batch(n: int, batch: int):
   desviacion = 0
 
   # Iterar segun coeficiente tamaño_de_muestra / tamaño_de_batch + 1, para el caso donde sobren iteraciones
-  for i, chunk in enumerate(pd.read_csv("lab5/tabla.csv", chunksize=batch, header=None)):
+  for i, chunk in enumerate(pd.read_csv("tabla.csv", chunksize=batch, header=None)):
     
     # Para última iteración, saltarla si no hay sobrantes
     if sobrantes == 0 and i == iteraciones:
