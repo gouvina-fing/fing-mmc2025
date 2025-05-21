@@ -126,8 +126,7 @@ def montecarlo_estratificado(n, f, d, semilla=42, proporcional=False):
 
 # Leer parametros
 n = 1000000 if len(sys.argv) <= 1 else float(sys.argv[1]) # Cantidad de iteraciones (n)
-e = 0.0001 if len(sys.argv) <= 2 else float(sys.argv[2]) # Error (e)
-d = 0.05 if len(sys.argv) <= 3 else float(sys.argv[3]) # Nivel de confianza (1-d)
+d = 0.05 if len(sys.argv) <= 2 else float(sys.argv[2]) # Nivel de confianza (1-d)
 
 # Ejecutar ambas versiones del algoritmo
 res_uniforme = montecarlo_estratificado(n, funcion_ej62, d, 42, proporcional=False)
